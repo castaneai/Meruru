@@ -16,6 +16,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSComboBoxDelegate {
     
     var mirakurun: MirakurunAPI!
     
+    var statusTextField: NSTextField!
     var servicesComboBox: NSComboBox!
     
     var player: VLCMediaPlayer!
@@ -32,7 +33,25 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSComboBoxDelegate {
                 NSApplication.shared.terminate(self)
             }
         }
+        
+        statusTextField = NSTextField(frame: NSRect(x: 250, y: 0, width: 200, height: 24))
+        statusTextField.drawsBackground = false
+        statusTextField.isBordered = false
+        statusTextField.isEditable = false
+        statusTextField.stringValue = "Mirakurun: connecting..."
+        window.contentView?.addSubview(statusTextField)
+        
         mirakurun = MirakurunAPI(baseURL: URL(string: (mirakurunPath ?? "") + "/api")!)
+        mirakurun.fetchStatus { result in
+            switch result {
+            case .success(let status):
+                DispatchQueue.main.async {
+                    self.statusTextField.stringValue = "Mirakurun: v" + status.version
+                }
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
         
         AppConfig.shared.currentData?.mirakurunPath = mirakurunPath
         

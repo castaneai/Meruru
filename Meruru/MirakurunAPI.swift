@@ -7,6 +7,11 @@
 //
 
 import Foundation
+import Alamofire
+
+public struct Status: Codable {
+    let version: String
+}
 
 public struct Service: Codable {
     let id: Int
@@ -39,20 +44,18 @@ public class MirakurunAPI {
             .appendingPathComponent("stream")
     }
     
-    public func fetchServices(completion: @escaping (Result<[Service], Error>) -> Void) {
-        let url = self.baseURL.appendingPathComponent("services")
-        URLSession.shared.dataTask(with: url) { data, response, error in
-            guard let data = data, let _ = response as? HTTPURLResponse else {
-                debugPrint("error")
-                return
-            }
-            do {
-                let services: [Service] = try self.jsonDecoder.decode([Service].self, from: data)
-                completion(.success(services))
-            } catch {
-                // error
-            }
-        }.resume()
+    public func fetchStatus(completion: @escaping (Result<Status>) -> Void) {
+        let url = self.baseURL.appendingPathComponent("status")
+        AF.request(url).responseDecodable { response in
+            completion(response.result)
+        }
     }
-
+    
+    public func fetchServices(completion: @escaping (Result<[Service]>) -> Void) {
+        let url = self.baseURL.appendingPathComponent("services")
+        AF.request(url).responseDecodable { response in
+            completion(response.result)
+        }
+    }
+    
 }

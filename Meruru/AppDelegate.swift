@@ -23,17 +23,47 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSComboBoxDelegate {
     var services: [Service] = []
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
-        var mirakurunPath = AppConfig.shared.currentData?.mirakurunPath
-        if mirakurunPath == nil {
-            mirakurunPath = promptMirakurunPath()
-            if mirakurunPath == nil {
-                let alert = NSAlert()
-                alert.messageText = "invalid mirakurun path"
-                alert.runModal()
-                NSApplication.shared.terminate(self)
+        initUI()
+        
+        guard let mirakurunPath = AppConfig.shared.currentData?.mirakurunPath ?? promptMirakurunPath() else {
+            showErrorAndQuit(error: NSError(domain: "invalid mirakurun path", code: 0))
+            return
+        }
+
+        mirakurun = MirakurunAPI(baseURL: URL(string: mirakurunPath + "/api")!)
+        mirakurun.fetchStatus { result in
+            switch result {
+            case .success(let status):
+                AppConfig.shared.currentData?.mirakurunPath = mirakurunPath
+                DispatchQueue.main.async {
+                    self.statusTextField.stringValue = "Mirakurun: v" + status.version
+                }
+                self.mirakurun.fetchServices { result in
+                    switch result {
+                    case .success(let services):
+                        self.services = services
+                        DispatchQueue.main.async {
+                            self.servicesComboBox.addItems(withObjectValues: services.map { $0.name })
+                            self.servicesComboBox.selectItem(at: 0)
+                        }
+                    case .failure(let error):
+                        self.showErrorAndQuit(error: error)
+                    }
+                }
+            case .failure(let error):
+                debugPrint(error)
+                self.showErrorAndQuit(error: NSError(domain: "failed to get Mirakurun's status (mirakurunPath: \(mirakurunPath))", code: 0))
             }
         }
-        
+    }
+    
+    func showErrorAndQuit(error: Error) {
+        let alert = NSAlert(error: error)
+        alert.runModal()
+        NSApplication.shared.terminate(self)
+    }
+    
+    func initUI() {
         statusTextField = NSTextField(frame: NSRect(x: 250, y: 0, width: 200, height: 24))
         statusTextField.drawsBackground = false
         statusTextField.isBordered = false
@@ -41,42 +71,16 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSComboBoxDelegate {
         statusTextField.stringValue = "Mirakurun: connecting..."
         window.contentView?.addSubview(statusTextField)
         
-        mirakurun = MirakurunAPI(baseURL: URL(string: (mirakurunPath ?? "") + "/api")!)
-        mirakurun.fetchStatus { result in
-            switch result {
-            case .success(let status):
-                DispatchQueue.main.async {
-                    self.statusTextField.stringValue = "Mirakurun: v" + status.version
-                }
-            case .failure(let error):
-                print(error.localizedDescription)
-            }
-        }
-        
-        AppConfig.shared.currentData?.mirakurunPath = mirakurunPath
-        
         servicesComboBox = NSComboBox(frame: NSRect(x: 0, y: 0, width: 200, height: 24))
         servicesComboBox.delegate = self
         window.contentView?.addSubview(servicesComboBox)
-        
-        mirakurun.fetchServices { result in
-            switch result {
-            case .success(let services):
-                self.services = services
-                DispatchQueue.main.async {
-                    self.servicesComboBox.addItems(withObjectValues: services.map { $0.name })
-                    self.servicesComboBox.selectItem(at: 0)
-                }
-            case .failure(let err):
-                debugPrint(err)
-            }
-        }
         
         let videoView = VLCVideoView(frame: NSRect(x: 0, y: 24, width: window.frame.width, height: window.frame.height - 24))
         videoView.autoresizingMask = [.width, .height]
         videoView.fillScreen = true
         videoView.backColor = NSColor.red
         window.contentView?.addSubview(videoView)
+        
         player = VLCMediaPlayer(videoView: videoView)
     }
     

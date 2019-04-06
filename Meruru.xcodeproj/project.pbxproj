@@ -10,7 +10,23 @@
 		D05B10AE2258C28D00D6988B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D05B10AD2258C28D00D6988B /* AppDelegate.swift */; };
 		D05B10B02258C28D00D6988B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D05B10AF2258C28D00D6988B /* Assets.xcassets */; };
 		D05B10B32258C28D00D6988B /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = D05B10B12258C28D00D6988B /* MainMenu.xib */; };
+		D05B10BC2258C35400D6988B /* VLCKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D05B10BB2258C35400D6988B /* VLCKit.framework */; };
+		D05B10BD2258C35400D6988B /* VLCKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D05B10BB2258C35400D6988B /* VLCKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		D05B10BE2258C35400D6988B /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				D05B10BD2258C35400D6988B /* VLCKit.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		D05B10AA2258C28D00D6988B /* Meruru.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Meruru.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -19,6 +35,7 @@
 		D05B10B22258C28D00D6988B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		D05B10B42258C28D00D6988B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D05B10B52258C28D00D6988B /* Meruru.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Meruru.entitlements; sourceTree = "<group>"; };
+		D05B10BB2258C35400D6988B /* VLCKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VLCKit.framework; path = Carthage/Build/Mac/VLCKit.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -26,6 +43,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D05B10BC2258C35400D6988B /* VLCKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -35,6 +53,7 @@
 		D05B10A12258C28C00D6988B = {
 			isa = PBXGroup;
 			children = (
+				D05B10BB2258C35400D6988B /* VLCKit.framework */,
 				D05B10AC2258C28D00D6988B /* Meruru */,
 				D05B10AB2258C28D00D6988B /* Products */,
 			);
@@ -70,6 +89,7 @@
 				D05B10A62258C28D00D6988B /* Sources */,
 				D05B10A72258C28D00D6988B /* Frameworks */,
 				D05B10A82258C28D00D6988B /* Resources */,
+				D05B10BE2258C35400D6988B /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -92,6 +112,11 @@
 				TargetAttributes = {
 					D05B10A92258C28D00D6988B = {
 						CreatedOnToolsVersion = 10.2;
+						SystemCapabilities = {
+							com.apple.Sandbox = {
+								enabled = 0;
+							};
+						};
 					};
 				};
 			};
@@ -270,6 +295,10 @@
 				CODE_SIGN_ENTITLEMENTS = Meruru/Meruru.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/Mac",
+				);
 				INFOPLIST_FILE = Meruru/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -288,6 +317,10 @@
 				CODE_SIGN_ENTITLEMENTS = Meruru/Meruru.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/Mac",
+				);
 				INFOPLIST_FILE = Meruru/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

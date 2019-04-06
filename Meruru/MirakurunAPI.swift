@@ -26,6 +26,12 @@ public struct Channel: Codable {
     let channel: String
 }
 
+public struct Program : Codable {
+    let name: String
+    let startAt: Int64
+    let duration: Int64
+}
+
 public class MirakurunAPI {
     
     init(baseURL: URL) {
@@ -33,6 +39,17 @@ public class MirakurunAPI {
     }
     private let baseURL: URL
     private let jsonDecoder: JSONDecoder = JSONDecoder()
+    
+    public func fetchPrograms(service: Service, completion: @escaping (Result<[Program]>) -> Void) {
+        let url = self.baseURL.appendingPathComponent("programs")
+        let params: Parameters = [
+            "serviceId": service.serviceId,
+        ]
+        AF.request(url, parameters: params, encoding: URLEncoding(destination: .queryString))
+            .responseDecodable { response in
+            completion(response.result)
+        }
+    }
     
     public func getStreamURL(service: Service) -> URL {
         return self.baseURL

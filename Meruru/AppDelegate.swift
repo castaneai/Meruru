@@ -21,6 +21,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSComboBoxDelegate {
     
     var player: VLCMediaPlayer!
     var services: [Service] = []
+    var currentService: Service?
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         initUI()
@@ -105,10 +106,29 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSComboBoxDelegate {
     func comboBoxSelectionDidChange(_ notification: Notification) {
         let selectedService = services[servicesComboBox.indexOfSelectedItem]
         debugPrint(selectedService)
+        currentService = selectedService
+        mirakurun.fetchPrograms(service: selectedService) { result in
+            switch result {
+            case .success(let programs):
+                guard let program = self.getNowProgram(programs: programs) else {
+                    return
+                }
+                DispatchQueue.main.async {
+                    self.window?.title = "Meruru - \(program.name) - \(selectedService.name)"
+                }
+            case .failure(_):
+                return
+            }
+        }
         player.stop()
         let media = VLCMedia(url: mirakurun.getStreamURL(service: selectedService))
         player.media = media
         player.play()
+    }
+    
+    func getNowProgram(programs: [Program]) -> Program? {
+        let now = Int64(Date().timeIntervalSince1970 * 1000)
+        return programs.first { $0.startAt...($0.startAt + $0.duration) ~= now }
     }
     
     func applicationWillTerminate(_ aNotification: Notification) {

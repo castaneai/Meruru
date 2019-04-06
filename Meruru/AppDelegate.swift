@@ -11,7 +11,7 @@ import VLCKit
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate, NSComboBoxDelegate {
-
+    
     @IBOutlet weak var window: NSWindow!
     
     var mirakurun: MirakurunAPI!
@@ -20,11 +20,23 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSComboBoxDelegate {
     
     var player: VLCMediaPlayer!
     var services: [Service] = []
-
+    
     func applicationDidFinishLaunching(_ aNotification: Notification) {
-        mirakurun = MirakurunAPI(baseURL: URL(string: "http://192.168.0.7:40772/api")!)
+        var mirakurunPath = AppConfig.shared.currentData?.mirakurunPath
+        if mirakurunPath == nil {
+            mirakurunPath = promptMirakurunPath()
+            if mirakurunPath == nil {
+                let alert = NSAlert()
+                alert.messageText = "invalid mirakurun path"
+                alert.runModal()
+                NSApplication.shared.terminate(self)
+            }
+        }
+        mirakurun = MirakurunAPI(baseURL: URL(string: (mirakurunPath ?? "") + "/api")!)
         
-        servicesComboBox = NSComboBox(frame: NSRect(x: 0, y: 0, width: 200, height: 30))
+        AppConfig.shared.currentData?.mirakurunPath = mirakurunPath
+        
+        servicesComboBox = NSComboBox(frame: NSRect(x: 0, y: 0, width: 200, height: 24))
         servicesComboBox.delegate = self
         window.contentView?.addSubview(servicesComboBox)
         
@@ -41,12 +53,30 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSComboBoxDelegate {
             }
         }
         
-        let videoView = VLCVideoView(frame: NSRect(x: 0, y: 30, width: window.frame.width, height: window.frame.height - 30))
+        let videoView = VLCVideoView(frame: NSRect(x: 0, y: 24, width: window.frame.width, height: window.frame.height - 24))
         videoView.autoresizingMask = [.width, .height]
         videoView.fillScreen = true
         videoView.backColor = NSColor.red
         window.contentView?.addSubview(videoView)
         player = VLCMediaPlayer(videoView: videoView)
+    }
+    
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
+        return true
+    }
+    
+    func promptMirakurunPath() -> Optional<String> {
+        let alert = NSAlert()
+        alert.messageText = "Please input path of Mirakurun (e.g, http://192.168.x.x:40772)"
+        alert.alertStyle = .informational
+        let tf = NSTextField(frame: NSRect(x: 0, y: 0, width: 200, height: 24))
+        alert.accessoryView = tf
+        alert.addButton(withTitle: "OK")
+        let res = alert.runModal()
+        if res == .alertFirstButtonReturn {
+            return tf.stringValue
+        }
+        return nil
     }
     
     func comboBoxSelectionDidChange(_ notification: Notification) {
@@ -57,9 +87,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSComboBoxDelegate {
         player.media = media
         player.play()
     }
-
+    
     func applicationWillTerminate(_ aNotification: Notification) {
-        player.stop()
+        player?.stop()
+        do {
+            try AppConfig.shared.save()
+        } catch let err {
+            let alert = NSAlert(error: err)
+            alert.runModal()
+        }
     }
 }
 

@@ -13,6 +13,7 @@
 		D05B10BC2258C35400D6988B /* VLCKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D05B10BB2258C35400D6988B /* VLCKit.framework */; };
 		D05B10BD2258C35400D6988B /* VLCKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D05B10BB2258C35400D6988B /* VLCKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D05B10C12258D79000D6988B /* MirakurunAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D05B10BF2258D1D100D6988B /* MirakurunAPI.swift */; };
+		D05B10C32258EC0500D6988B /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = D05B10C22258EC0500D6988B /* AppConfig.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -38,6 +39,7 @@
 		D05B10B52258C28D00D6988B /* Meruru.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Meruru.entitlements; sourceTree = "<group>"; };
 		D05B10BB2258C35400D6988B /* VLCKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VLCKit.framework; path = Carthage/Build/Mac/VLCKit.framework; sourceTree = "<group>"; };
 		D05B10BF2258D1D100D6988B /* MirakurunAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MirakurunAPI.swift; sourceTree = "<group>"; };
+		D05B10C22258EC0500D6988B /* AppConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfig.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,6 +80,7 @@
 				D05B10B42258C28D00D6988B /* Info.plist */,
 				D05B10B52258C28D00D6988B /* Meruru.entitlements */,
 				D05B10BF2258D1D100D6988B /* MirakurunAPI.swift */,
+				D05B10C22258EC0500D6988B /* AppConfig.swift */,
 			);
 			path = Meruru;
 			sourceTree = "<group>";
@@ -158,6 +161,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D05B10C32258EC0500D6988B /* AppConfig.swift in Sources */,
 				D05B10C12258D79000D6988B /* MirakurunAPI.swift in Sources */,
 				D05B10AE2258C28D00D6988B /* AppDelegate.swift in Sources */,
 			);

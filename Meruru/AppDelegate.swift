@@ -13,11 +13,11 @@ import VLCKit
 class AppDelegate: NSObject, NSApplicationDelegate, NSComboBoxDelegate {
     
     @IBOutlet weak var window: NSWindow!
+    @IBOutlet weak var statusTextField: NSTextField!
+    @IBOutlet weak var servicesComboBox: NSComboBox!
+    @IBOutlet weak var videoWrapView: NSView!
     
     var mirakurun: MirakurunAPI!
-    
-    var statusTextField: NSTextField!
-    var servicesComboBox: NSComboBox!
     
     var player: VLCMediaPlayer!
     var services: [Service] = []
@@ -65,26 +65,17 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSComboBoxDelegate {
     }
     
     func initUI() {
-        statusTextField = NSTextField(frame: NSRect(x: 250, y: 0, width: 200, height: 24))
-        statusTextField.drawsBackground = false
-        statusTextField.isBordered = false
-        statusTextField.isEditable = false
-        statusTextField.stringValue = "Mirakurun: connecting..."
-        window.contentView?.addSubview(statusTextField)
-        
-        servicesComboBox = NSComboBox(frame: NSRect(x: 0, y: 0, width: 200, height: 24))
         servicesComboBox.delegate = self
-        window.contentView?.addSubview(servicesComboBox)
-        
-        let videoView = VLCVideoView(frame: NSRect(x: 0, y: 24, width: window.frame.width, height: window.frame.height - 24))
+
+        let videoView = VLCVideoView(frame: NSRect(x: 0, y: 0, width: videoWrapView.frame.width, height: videoWrapView.frame.height))
         videoView.autoresizingMask = [.width, .height]
         videoView.fillScreen = true
         videoView.backColor = NSColor.red
-        window.contentView?.addSubview(videoView)
-        
+        videoWrapView.addSubview(videoView)
+
         player = VLCMediaPlayer(videoView: videoView)
     }
-    
+
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
         return true
     }

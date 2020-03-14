@@ -6,9 +6,14 @@ A Simple [Mirakurun](https://github.com/Chinachu/Mirakurun) Client for Mac OS
 
 ## Config
 
-Config file: `~/.config/meruru/config.json`
+The Meruru config file is placed in `~/.config/meruru/config.json`.
+Put the Mirakurun HTTP endpoint in `"mirakurunPath"` as follows:
 
-- `mirakurunPath`: A Path to mirakurun server (e.g, `http://192.168.x.x:40772`)
+```json
+{
+  "mirakurunPath": "http://192.168.x.x:40772"
+}
+```
 
 ## Build
 

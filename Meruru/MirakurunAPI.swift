@@ -40,7 +40,7 @@ public class MirakurunAPI {
     private let baseURL: URL
     private let jsonDecoder: JSONDecoder = JSONDecoder()
     
-    public func fetchPrograms(service: Service, completion: @escaping (Result<[Program]>) -> Void) {
+    public func fetchPrograms(service: Service, completion: @escaping (Result<[Program], AFError>) -> Void) {
         let url = self.baseURL.appendingPathComponent("programs")
         let params: Parameters = [
             "serviceId": service.serviceId,
@@ -61,14 +61,14 @@ public class MirakurunAPI {
             .appendingPathComponent("stream")
     }
     
-    public func fetchStatus(completion: @escaping (Result<Status>) -> Void) {
+    public func fetchStatus(completion: @escaping (Result<Status, AFError>) -> Void) {
         let url = self.baseURL.appendingPathComponent("status")
         AF.request(url).responseDecodable { response in
             completion(response.result)
         }
     }
     
-    public func fetchServices(completion: @escaping (Result<[Service]>) -> Void) {
+    public func fetchServices(completion: @escaping (Result<[Service], AFError>) -> Void) {
         let url = self.baseURL.appendingPathComponent("services")
         AF.request(url).responseDecodable { response in
             completion(response.result)

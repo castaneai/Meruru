@@ -1,6 +1,6 @@
 # Meruru
 
-A Simple [Mirakurun](https://github.com/Chinachu/Mirakurun) Client for Mac OS
+A Simple [Mirakurun](https://github.com/Chinachu/Mirakurun)/[mirakc](https://github.com/mirakc/mirakc) Client for Mac OS
 
 ![Meruru](Meruru.png)
 
@@ -13,7 +13,7 @@ Config file: `~/.config/meruru/config.json`
 ## Build
 
 - Install [Carthage](https://github.com/Carthage/Carthage)
-- Run `carthage install`
+- Run `carthage bootstrap`
 
 ## License
 

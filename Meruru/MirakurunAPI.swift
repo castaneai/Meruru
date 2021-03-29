@@ -52,13 +52,17 @@ public class MirakurunAPI {
     }
     
     public func getStreamURL(service: Service) -> URL {
-        return self.baseURL
+        let queryItems = [URLQueryItem(name: "decode", value: "1")]
+        let streamUrl = self.baseURL
             .appendingPathComponent("channels")
             .appendingPathComponent(service.channel.type)
             .appendingPathComponent(service.channel.channel)
             .appendingPathComponent("services")
             .appendingPathComponent(String(service.serviceId))
             .appendingPathComponent("stream")
+        var urlComps = URLComponents(url: streamUrl, resolvingAgainstBaseURL: false)
+        urlComps?.queryItems = queryItems
+        return (urlComps?.url)!
     }
     
     public func fetchStatus(completion: @escaping (Result<Status, AFError>) -> Void) {

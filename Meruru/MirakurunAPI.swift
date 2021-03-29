@@ -10,7 +10,7 @@ import Foundation
 import Alamofire
 
 public struct Status: Codable {
-    let version: String
+    let version: String?
 }
 
 public struct Service: Codable {

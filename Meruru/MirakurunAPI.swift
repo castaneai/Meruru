@@ -10,7 +10,7 @@ import Foundation
 import Alamofire
 
 public struct Status: Codable {
-    let version: String
+    let version: String?
 }
 
 public struct Service: Codable {
@@ -40,7 +40,7 @@ public class MirakurunAPI {
     private let baseURL: URL
     private let jsonDecoder: JSONDecoder = JSONDecoder()
     
-    public func fetchPrograms(service: Service, completion: @escaping (Result<[Program]>) -> Void) {
+    public func fetchPrograms(service: Service, completion: @escaping (Result<[Program], AFError>) -> Void) {
         let url = self.baseURL.appendingPathComponent("programs")
         let params: Parameters = [
             "serviceId": service.serviceId,
@@ -52,23 +52,27 @@ public class MirakurunAPI {
     }
     
     public func getStreamURL(service: Service) -> URL {
-        return self.baseURL
+        let queryItems = [URLQueryItem(name: "decode", value: "1")]
+        let streamUrl = self.baseURL
             .appendingPathComponent("channels")
             .appendingPathComponent(service.channel.type)
             .appendingPathComponent(service.channel.channel)
             .appendingPathComponent("services")
             .appendingPathComponent(String(service.serviceId))
             .appendingPathComponent("stream")
+        var urlComps = URLComponents(url: streamUrl, resolvingAgainstBaseURL: false)
+        urlComps?.queryItems = queryItems
+        return (urlComps?.url)!
     }
     
-    public func fetchStatus(completion: @escaping (Result<Status>) -> Void) {
+    public func fetchStatus(completion: @escaping (Result<Status, AFError>) -> Void) {
         let url = self.baseURL.appendingPathComponent("status")
         AF.request(url).responseDecodable { response in
             completion(response.result)
         }
     }
     
-    public func fetchServices(completion: @escaping (Result<[Service]>) -> Void) {
+    public func fetchServices(completion: @escaping (Result<[Service], AFError>) -> Void) {
         let url = self.baseURL.appendingPathComponent("services")
         AF.request(url).responseDecodable { response in
             completion(response.result)

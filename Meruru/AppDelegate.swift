@@ -37,7 +37,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSComboBoxDelegate {
             case .success(let status):
                 AppConfig.shared.currentData?.mirakurunPath = mirakurunPath
                 DispatchQueue.main.async {
-                    self.statusTextField.stringValue = "Mirakurun: v" + status.version
+                    self.statusTextField.stringValue = "Mirakurun: v" + (status.version ?? " unknown")
                 }
                 self.mirakurun.fetchServices { result in
                     switch result {

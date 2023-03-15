@@ -32,12 +32,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSComboBoxDelegate {
         }
 
         mirakurun = MirakurunAPI(baseURL: URL(string: mirakurunPath + "/api")!)
-        mirakurun.fetchStatus { result in
+        mirakurun.fetchVersion { result in
             switch result {
             case .success(let status):
                 AppConfig.shared.currentData?.mirakurunPath = mirakurunPath
                 DispatchQueue.main.async {
-                    self.statusTextField.stringValue = "Mirakurun: v" + (status.version ?? " unknown")
+                    self.statusTextField.stringValue = "Mirakurun: v" + (status.current)
                 }
                 self.mirakurun.fetchServices { result in
                     switch result {

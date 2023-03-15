@@ -9,8 +9,9 @@
 import Foundation
 import Alamofire
 
-public struct Status: Codable {
-    let version: String?
+public struct Version: Codable {
+    let current: String
+    let latest: String
 }
 
 public struct Service: Codable {
@@ -65,8 +66,8 @@ public class MirakurunAPI {
         return (urlComps?.url)!
     }
     
-    public func fetchStatus(completion: @escaping (Result<Status, AFError>) -> Void) {
-        let url = self.baseURL.appendingPathComponent("status")
+    public func fetchVersion(completion: @escaping (Result<Version, AFError>) -> Void) {
+        let url = self.baseURL.appendingPathComponent("version")
         AF.request(url).responseDecodable { response in
             completion(response.result)
         }

@@ -2,7 +2,7 @@
 
 A Simple [Mirakurun](https://github.com/Chinachu/Mirakurun)/[mirakc](https://github.com/mirakc/mirakc) Client for macOS.
 
-![Meruru](Meruru.png)
+![Meruru](./Meruru.webp)
 
 ## Requirements
 

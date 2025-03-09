@@ -11,7 +11,7 @@ class AppViewModel: ObservableObject {
     }
 
     @Published var channels: [Channel] = []
-    @Published var nowOnAirProgram: String?
+    @Published var nowOnAirProgramTitle: String?
     @Published var statusMessage: String?
 
     private var mirakurun: Mirakurun?
@@ -54,6 +54,9 @@ class AppViewModel: ObservableObject {
 
         lastChannelID = channel.id
         statusMessage = ""
+        Task {
+            await updateNowOnAirProgram()
+        }
     }
 
     func getSelectedChannelStreamURL() -> URL? {
@@ -63,18 +66,14 @@ class AppViewModel: ObservableObject {
     }
 
     func updateNowOnAirProgram() async {
-        let old = nowOnAirProgram
-        if let mirakurun = mirakurun, let selectedChannel = selectedChannel {
-            do {
-                let program = try await mirakurun.fetchNowOnAirProgram(channel: selectedChannel)
-                print("program: \(String(describing: program))")
-                nowOnAirProgram = program?.name
-                if let newVal = nowOnAirProgram, newVal != old {
-                    statusMessage = "on air: \(newVal)"
-                }
-            } catch {
-                statusMessage = "failed to fetch now on air: \(error)"
+        guard let mirakurun = mirakurun, let selectedChannel = selectedChannel else { return }
+
+        do {
+            if let program = try await mirakurun.fetchNowOnAirProgram(channel: selectedChannel) {
+                nowOnAirProgramTitle = program.name
             }
+        } catch {
+            statusMessage = "failed to fetch now on air: \(error)"
         }
     }
 }

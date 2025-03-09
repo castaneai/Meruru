@@ -9,9 +9,10 @@ struct MyApp: App {
     @Environment(\.openSettings) private var openSettings
 
     var body: some Scene {
-        WindowGroup(windowTitle()) {
+        WindowGroup {
             AppView(viewModel: viewModel)
                 .task { onAppStart() }
+                .navigationTitle(windowTitle())
         }
         Settings {
             SettingsView(viewModel: viewModel)
@@ -19,7 +20,10 @@ struct MyApp: App {
     }
 
     private func windowTitle() -> String {
-        viewModel.nowOnAirProgram ?? "Meruru"
+        if let onAir = viewModel.nowOnAirProgramTitle {
+            return "\(onAir) | Meruru"
+        }
+        return "Meruru"
     }
 
     private func onAppStart() {

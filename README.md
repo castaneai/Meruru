@@ -1,24 +1,23 @@
 # Meruru
 
-A Simple [Mirakurun](https://github.com/Chinachu/Mirakurun)/[mirakc](https://github.com/mirakc/mirakc) Client for Mac OS
+A Simple [Mirakurun](https://github.com/Chinachu/Mirakurun)/[mirakc](https://github.com/mirakc/mirakc) Client for macOS.
 
-![Meruru](Meruru.png)
+![Meruru](./Meruru.webp)
 
-## Config
+## Requirements
 
-The Meruru config file is placed in `~/.config/meruru/config.json`.
-Put the Mirakurun HTTP endpoint in `"mirakurunPath"` as follows:
-
-```json
-{
-  "mirakurunPath": "http://192.168.x.x:40772"
-}
-```
+- macOS v14+ (Sonoma)
 
 ## Build
 
-- Install [Carthage](https://github.com/Carthage/Carthage)
-- Run `carthage bootstrap`
+You can build Meruru using [Swift Bundler](https://swiftbundler.dev/) in macOS environment.
+
+```shell
+swift build -c release
+swift bundler bundle -o . -c release -u
+cp -r .build/release/VLCKit.framework Meruru.app/Contents/Frameworks
+open Meruru.app
+```
 
 ## License
 

@@ -5,3 +5,5 @@ product = "Meruru"
 version = "0.1.0"
 identifier = "net.castaneai.Meruru"
 minimum_macos_version = "14"
+icon = "icon.png"
+

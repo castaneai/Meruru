@@ -13,9 +13,7 @@ A Simple [Mirakurun](https://github.com/Chinachu/Mirakurun)/[mirakc](https://git
 You can build Meruru using [Swift Bundler](https://swiftbundler.dev/) in macOS environment.
 
 ```shell
-swift build -c release
-swift bundler bundle -o . -c release -u
-cp -r .build/release/VLCKit.framework Meruru.app/Contents/Frameworks
+make build
 open Meruru.app
 ```
 

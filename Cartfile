@@ -1,2 +1,0 @@
-binary "https://code.videolan.org/videolan/VLCKit/raw/master/Packaging/VLCKit.json" ~> 3.5.1
-github "Alamofire/Alamofire" ~> 5.6.4

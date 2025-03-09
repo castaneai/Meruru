@@ -72,8 +72,7 @@ final class Mirakurun: Sendable {
 
     func fetchNowOnAirProgram(channel: Channel) async throws -> Program? {
         try await self.fetchPrograms(channel: channel).first(where: {
-            print("\($0.name) \($0.startedAt) --- \($0.endedAt)")
-            return $0.isOnAir(now: Date.now)
+            $0.isOnAir(now: Date.now)
         })
     }
 }

@@ -15,6 +15,8 @@ class AppViewModel: ObservableObject {
     @Published var statusMessage: String?
 
     private var mirakurun: Mirakurun?
+    private var updateTimer: Timer?
+    private var currentPrograms: [Program] = []
 
     func initMirakurun() {
         if mirakurunURL == "" {
@@ -50,12 +52,16 @@ class AppViewModel: ObservableObject {
     }
 
     private func onChannelChanged(channel: Channel?) {
-        guard let channel = channel else { return }
+        guard let channel = channel else {
+            stopUpdateTimer()
+            return
+        }
 
         lastChannelID = channel.id
         statusMessage = ""
         Task {
             await updateNowOnAirProgram()
+            await setupUpdateTimer()
         }
     }
 
@@ -69,11 +75,50 @@ class AppViewModel: ObservableObject {
         guard let mirakurun = mirakurun, let selectedChannel = selectedChannel else { return }
 
         do {
-            if let program = try await mirakurun.fetchNowOnAirProgram(channel: selectedChannel) {
+            currentPrograms = try await mirakurun.fetchPrograms(channel: selectedChannel)
+            if let program = currentPrograms.first(where: { $0.isOnAir(now: Date.now) }) {
                 nowOnAirProgramTitle = program.name
             }
         } catch {
             statusMessage = "failed to fetch now on air: \(error)"
         }
+    }
+
+    private func setupUpdateTimer() async {
+        stopUpdateTimer()
+
+        guard !currentPrograms.isEmpty else { return }
+
+        let now = Date.now
+        var nextUpdateTime: Date?
+
+        for program in currentPrograms {
+            if program.startedAt > now {
+                if nextUpdateTime == nil || program.startedAt < nextUpdateTime! {
+                    nextUpdateTime = program.startedAt
+                }
+            } else if program.isOnAir(now: now) {
+                if nextUpdateTime == nil || program.endedAt < nextUpdateTime! {
+                    nextUpdateTime = program.endedAt
+                }
+            }
+        }
+
+        guard let updateTime = nextUpdateTime else { return }
+
+        let timeInterval = updateTime.timeIntervalSince(now)
+        if timeInterval > 0 {
+            updateTimer = Timer.scheduledTimer(withTimeInterval: timeInterval, repeats: false) { [weak self] _ in
+                Task { @MainActor in
+                    await self?.updateNowOnAirProgram()
+                    await self?.setupUpdateTimer()
+                }
+            }
+        }
+    }
+
+    private func stopUpdateTimer() {
+        updateTimer?.invalidate()
+        updateTimer = nil
     }
 }

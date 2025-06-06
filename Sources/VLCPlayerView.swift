@@ -3,9 +3,11 @@ import VLCKit
 
 struct VLCPlayerView: NSViewRepresentable {
     let mediaURL: URL?
+    @Binding var volume: Double
 
     class Coordinator {
         let mediaPlayer = VLCMediaPlayer()
+        var currentMediaURL: URL?
     }
 
     func makeCoordinator() -> Coordinator {
@@ -21,7 +23,12 @@ struct VLCPlayerView: NSViewRepresentable {
     }
 
     func updateNSView(_ nsView: VLCVideoView, context: Context) {
-        playVideo(mediaPlayer: context.coordinator.mediaPlayer)
+        let coordinator = context.coordinator
+        coordinator.mediaPlayer.audio?.volume = Int32(volume * 100)
+        if coordinator.currentMediaURL != mediaURL {
+            coordinator.currentMediaURL = mediaURL
+            playVideo(mediaPlayer: coordinator.mediaPlayer)
+        }
     }
 
     func playVideo(mediaPlayer: VLCMediaPlayer) {

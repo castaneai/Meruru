@@ -40,9 +40,15 @@ struct AppView: View {
 
     var body: some View {
         VStack {
-            VLCPlayerView(mediaURL: viewModel.getSelectedChannelStreamURL())
+            VLCPlayerView(mediaURL: viewModel.getSelectedChannelStreamURL(), volume: $viewModel.volume)
                 .background(Color.black)
             HStack {
+                HStack {
+                    Image(systemName: "speaker.wave.1")
+                        .foregroundColor(.secondary)
+                    Slider(value: $viewModel.volume, in: 0 ... 1)
+                        .frame(width: 100)
+                }
                 Picker("channel", selection: $viewModel.selectedChannel) {
                     ForEach(viewModel.channels) { item in
                         Text(item.name).tag(item as Channel?)
@@ -68,7 +74,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         NSApplication.shared.setActivationPolicy(.regular)
         NSApplication.shared.activate(ignoringOtherApps: true)
     }
-    
+
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
         return true
     }

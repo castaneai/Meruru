@@ -4,6 +4,7 @@ import SwiftUI
 class AppViewModel: ObservableObject {
     @AppStorage("mirakurunUrl") var mirakurunURL: String = "http://mirakurun:40772"
     @AppStorage("lastChannelId") var lastChannelID: String = ""
+    @AppStorage("volume") var volume: Double = 1.0
     @Published var selectedChannel: Channel? {
         didSet {
             onChannelChanged(channel: selectedChannel)

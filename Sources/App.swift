@@ -49,19 +49,23 @@ struct AppView: View {
                     Slider(value: $viewModel.volume, in: 0 ... 1)
                         .frame(width: 100)
                 }
-                Picker("channel", selection: $viewModel.selectedChannel) {
-                    ForEach(viewModel.channels) { item in
-                        Text(item.name).tag(item as Channel?)
+                Picker("service", selection: $viewModel.selectedService) {
+                    ForEach(viewModel.services) { item in
+                        // Display as "Name (SID)"
+                        Text("\(item.name) (\(item.serviceId))").tag(item as Service?)
                     }
                 }
                 .pickerStyle(MenuPickerStyle())
+                Spacer()
                 SettingsLink {
                     Label("Settings", systemImage: "gear")
                 }
                 Button("Connect") {
                     viewModel.initMirakurun()
                 }
-            }.padding(.horizontal, 10).padding(.vertical, 6)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal, 10).padding(.vertical, 6)
             Text(viewModel.statusMessage ?? "")
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 10).padding(.vertical, 6)

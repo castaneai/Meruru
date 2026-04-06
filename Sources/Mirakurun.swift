@@ -5,7 +5,9 @@ struct Version: Codable, Sendable {
     let latest: String
 }
 
+// NOTE: Channel model kept for backward compatibility.
 struct Channel: Codable, Sendable, Identifiable, Hashable {
+    // Use `channel` as legacy identifier when channels API is used.
     var id: String { self.channel }
     let type: String
     let channel: String
@@ -57,22 +59,26 @@ final class Mirakurun: Sendable {
         return try JSONDecoder().decode([Channel].self, from: data)
     }
 
-    func fetchPrograms(channel: Channel) async throws -> [Program] {
-        if let serviceID = channel.services.first?.id {
-            let url = URL(string: "\(self.baseURL)/api/services/\(serviceID)/programs")!
-            let (data, _) = try await URLSession.shared.data(from: url)
-            return try JSONDecoder().decode([Program].self, from: data)
-        }
-        return []
+    // Fetch list of services from Mirakurun `/api/services`.
+    func fetchServices() async throws -> [Service] {
+        let url = URL(string: "\(self.baseURL)/api/services")!
+        let (data, _) = try await URLSession.shared.data(from: url)
+        return try JSONDecoder().decode([Service].self, from: data)
     }
 
-    func getStreamURL(channel: Channel) -> URL {
-        URL(string: "\(self.baseURL)/api/channels/\(channel.type)/\(channel.channel)/stream")!
+    // Fetch programs by Service.
+    func fetchPrograms(service: Service) async throws -> [Program] {
+        let url = URL(string: "\(self.baseURL)/api/services/\(service.id)/programs")!
+        let (data, _) = try await URLSession.shared.data(from: url)
+        return try JSONDecoder().decode([Program].self, from: data)
     }
 
-    func fetchNowOnAirProgram(channel: Channel) async throws -> Program? {
-        try await self.fetchPrograms(channel: channel).first(where: {
-            $0.isOnAir(now: Date.now)
-        })
+    // Build stream URL by Service.
+    func getStreamURL(service: Service) -> URL {
+        URL(string: "\(self.baseURL)/api/services/\(service.id)/stream")!
+    }
+
+    func fetchNowOnAirProgram(service: Service) async throws -> Program? {
+        try await self.fetchPrograms(service: service).first(where: { $0.isOnAir(now: Date.now) })
     }
 }

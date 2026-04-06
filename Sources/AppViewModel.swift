@@ -3,15 +3,16 @@ import SwiftUI
 @MainActor
 class AppViewModel: ObservableObject {
     @AppStorage("mirakurunUrl") var mirakurunURL: String = "http://mirakurun:40772"
-    @AppStorage("lastChannelId") var lastChannelID: String = ""
+    // Persist last selected Service ID
+    @AppStorage("lastServiceId") var lastServiceID: Int = 0
     @AppStorage("volume") var volume: Double = 1.0
-    @Published var selectedChannel: Channel? {
+    @Published var selectedService: Service? {
         didSet {
-            onChannelChanged(channel: selectedChannel)
+            onServiceChanged(service: selectedService)
         }
     }
 
-    @Published var channels: [Channel] = []
+    @Published var services: [Service] = []
     @Published var nowOnAirProgramTitle: String?
     @Published var statusMessage: String?
 
@@ -26,39 +27,39 @@ class AppViewModel: ObservableObject {
         }
         mirakurun = Mirakurun(baseURL: mirakurunURL)
         Task {
-            await fetchChannels()
-            if let channel = channels.first(where: { $0.id == lastChannelID }) {
-                selectedChannel = channel
-            } else if channels.count > 0 {
-                selectedChannel = channels.first
+            await fetchServices()
+            if let service = services.first(where: { $0.id == lastServiceID }) {
+                selectedService = service
+            } else if services.count > 0 {
+                selectedService = services.first
             }
         }
     }
 
-    private func fetchChannels() async {
+    private func fetchServices() async {
         guard let mirakurun = mirakurun else { return }
 
         do {
-            statusMessage = "fetching channels..."
-            channels = try await mirakurun.fetchChannels()
-            statusMessage = "channel fetch OK"
+            statusMessage = "fetching services..."
+            services = try await mirakurun.fetchServices()
+            statusMessage = "service fetch OK"
 
         } catch {
             if let urlError = error as? URLError {
-                statusMessage = "failed to fetch channels: \(urlError.localizedDescription)"
+                statusMessage = "failed to fetch services: \(urlError.localizedDescription)"
             } else {
-                statusMessage = "failed to fetch channels: \(error)"
+                statusMessage = "failed to fetch services: \(error)"
             }
         }
     }
 
-    private func onChannelChanged(channel: Channel?) {
-        guard let channel = channel else {
+    private func onServiceChanged(service: Service?) {
+        guard let service = service else {
             stopUpdateTimer()
             return
         }
 
-        lastChannelID = channel.id
+        lastServiceID = service.id
         statusMessage = ""
         Task {
             await updateNowOnAirProgram()
@@ -67,16 +68,16 @@ class AppViewModel: ObservableObject {
     }
 
     func getSelectedChannelStreamURL() -> URL? {
-        guard let mirakurun = mirakurun, let selectedChannel = selectedChannel else { return nil }
-
-        return mirakurun.getStreamURL(channel: selectedChannel)
+        guard let mirakurun = mirakurun, let selectedService = selectedService else { return nil }
+        // Deprecated method name retained for compatibility with the view.
+        return mirakurun.getStreamURL(service: selectedService)
     }
 
     func updateNowOnAirProgram() async {
-        guard let mirakurun = mirakurun, let selectedChannel = selectedChannel else { return }
+        guard let mirakurun = mirakurun, let selectedService = selectedService else { return }
 
         do {
-            currentPrograms = try await mirakurun.fetchPrograms(channel: selectedChannel)
+            currentPrograms = try await mirakurun.fetchPrograms(service: selectedService)
             if let program = currentPrograms.first(where: { $0.isOnAir(now: Date.now) }) {
                 nowOnAirProgramTitle = program.name
             }
